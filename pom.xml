@@ -81,6 +81,11 @@
             <artifactId>mapstruct</artifactId>
             <version>${mapstruct.version}</version>
         </dependency>
+        <dependency>
+            <groupId>dev.buianhtai1205</groupId>
+            <artifactId>atlogger</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>
