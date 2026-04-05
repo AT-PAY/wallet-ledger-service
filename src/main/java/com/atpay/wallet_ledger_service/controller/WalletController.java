@@ -2,8 +2,10 @@ package com.atpay.wallet_ledger_service.controller;
 
 import com.atpay.wallet_ledger_service.DTO.ApiResponse;
 import com.atpay.wallet_ledger_service.DTO.transaction.HistoryTransactionWalletResponse;
+import com.atpay.wallet_ledger_service.DTO.wallet.BalanceResponse;
 import com.atpay.wallet_ledger_service.DTO.wallet.WalletAccountRequest;
 import com.atpay.wallet_ledger_service.DTO.wallet.WalletAccountResponse;
+import com.atpay.wallet_ledger_service.service.TransactionService;
 import com.atpay.wallet_ledger_service.service.WalletAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Description;
@@ -25,6 +27,7 @@ import java.util.UUID;
 public class WalletController {
 
     private final WalletAccountService walletAccountService;
+    private final TransactionService transactionService;
 
     @Description("WL_A001")
     @PostMapping("/create")
@@ -57,10 +60,17 @@ public class WalletController {
         return ApiResponse.success(Boolean.TRUE);
     }
 
-    @Description("WL_107")
+    @Description("WL_A201")
+    @GetMapping("/{walletId}/balance")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<BalanceResponse> getBalance(@PathVariable String walletId) {
+        return ApiResponse.success(walletAccountService.getBalance(UUID.fromString(walletId)));
+    }
+
+    @Description("WL_A107")
     @GetMapping("/{walletId}/transaction")
-    public ApiResponse<HistoryTransactionWalletResponse> getHistoryTransactionWallet() {
-        // TODO: Transaction service
-        return ApiResponse.success(null);
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<HistoryTransactionWalletResponse> getHistoryTransactionWallet(@PathVariable String walletId) {
+        return ApiResponse.success(transactionService.getHistoryTransactionWallet(UUID.fromString(walletId)));
     }
 }

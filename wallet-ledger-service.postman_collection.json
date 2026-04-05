@@ -1,0 +1,512 @@
+{
+  "info": {
+    "name": "Wallet Ledger Service",
+    "_postman_id": "wallet-ledger-service-collection",
+    "description": "ATPay — Wallet Ledger Service API collection covering all WL_A001–WL_A301 endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "walletId",
+      "value": "00000000-0000-0000-0000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "walletIdTo",
+      "value": "00000000-0000-0000-0000-000000000002",
+      "type": "string"
+    },
+    {
+      "key": "transactionId",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Wallet Account",
+      "item": [
+        {
+          "name": "WL_A001 — Create Wallet",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/wallets/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["wallets", "create"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{$randomUUID}}\",\n  \"balance\": 0,\n  \"currency\": \"VND\",\n  \"status\": \"active\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Success response', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.code).to.eql(200);",
+                  "  pm.expect(body.data).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "WL_A002 — Get Wallet",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wallets/{{walletId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["wallets", "{{walletId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Wallet fields present', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.have.property('walletAccountId');",
+                  "  pm.expect(body.data).to.have.property('balance');",
+                  "  pm.expect(body.data).to.have.property('currency');",
+                  "  pm.expect(body.data).to.have.property('status');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "WL_A003 — Freeze Wallet",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wallets/{{walletId}}/freeze",
+              "host": ["{{baseUrl}}"],
+              "path": ["wallets", "{{walletId}}", "freeze"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().data).to.be.true);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "WL_A004 — Unfreeze Wallet",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wallets/{{walletId}}/unfreeze",
+              "host": ["{{baseUrl}}"],
+              "path": ["wallets", "{{walletId}}", "unfreeze"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().data).to.be.true);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "WL_A201 — Get Balance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wallets/{{walletId}}/balance",
+              "host": ["{{baseUrl}}"],
+              "path": ["wallets", "{{walletId}}", "balance"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Balance fields present', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.have.property('balance');",
+                  "  pm.expect(body.data).to.have.property('currency');",
+                  "  pm.expect(body.data).to.have.property('updatedAt');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "WL_A107 — History Transactions of Wallet",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wallets/{{walletId}}/transaction",
+              "host": ["{{baseUrl}}"],
+              "path": ["wallets", "{{walletId}}", "transaction"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has transactions list', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.have.property('transactions');",
+                  "  pm.expect(body.data.transactions).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "WL_A101 — Deposit",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/transactions/deposit",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", "deposit"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletAccountId\": \"{{walletId}}\",\n  \"amount\": 500000,\n  \"currency\": \"VND\",\n  \"source\": \"BANK_TRANSFER\",\n  \"referenceId\": \"REF-DEPOSIT-001\",\n  \"idempotencyKey\": \"{{$randomUUID}}\",\n  \"metadata\": {\n    \"bankCode\": \"VCB\",\n    \"bankAccount\": \"1234567890\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Transaction response valid', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.have.property('ledgerTransactionId');",
+                  "  pm.expect(body.data).to.have.property('status');",
+                  "  pm.expect(body.data).to.have.property('balanceAfter');",
+                  "  // save transactionId for journal tests",
+                  "  pm.collectionVariables.set('transactionId', body.data.ledgerTransactionId);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "WL_A102 — Withdraw",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/transactions/withdraw",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", "withdraw"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletAccountId\": \"{{walletId}}\",\n  \"amount\": 100000,\n  \"currency\": \"VND\",\n  \"source\": \"BANK_TRANSFER\",\n  \"referenceId\": \"REF-WITHDRAW-001\",\n  \"idempotencyKey\": \"{{$randomUUID}}\",\n  \"metadata\": {\n    \"bankCode\": \"VCB\",\n    \"bankAccount\": \"1234567890\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Balance decreased', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.have.property('balanceAfter');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "WL_A102 — Withdraw (Insufficient Balance)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/transactions/withdraw",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", "withdraw"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletAccountId\": \"{{walletId}}\",\n  \"amount\": 999999999,\n  \"currency\": \"VND\",\n  \"source\": \"BANK_TRANSFER\",\n  \"referenceId\": \"REF-WITHDRAW-FAIL-001\",\n  \"idempotencyKey\": \"{{$randomUUID}}\",\n  \"metadata\": {}\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 422 Unprocessable', () => pm.response.to.have.status(422));",
+                  "pm.test('INSUFFICIENT_BALANCE message', () => {",
+                  "  pm.expect(pm.response.json().message).to.eql('INSUFFICIENT_BALANCE');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "WL_A103 — Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", "transfer"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletAccountIdFrom\": \"{{walletId}}\",\n  \"walletAccountIdTo\": \"{{walletIdTo}}\",\n  \"amount\": 50000,\n  \"currency\": \"VND\",\n  \"source\": \"P2P\",\n  \"referenceId\": \"REF-TRANSFER-001\",\n  \"idempotencyKey\": \"{{$randomUUID}}\",\n  \"metadata\": {\n    \"note\": \"Chuyển tiền bạn bè\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Transfer response valid', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.have.property('ledgerTransactionFromId');",
+                  "  pm.expect(body.data).to.have.property('ledgerTransactionToId');",
+                  "  pm.expect(body.data).to.have.property('balanceFromAfter');",
+                  "  pm.expect(body.data).to.have.property('balanceToAfter');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "WL_A104 — Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/transactions/payment",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", "payment"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletAccountId\": \"{{walletId}}\",\n  \"amount\": 75000,\n  \"currency\": \"VND\",\n  \"source\": \"QR_PAYMENT\",\n  \"referenceId\": \"ORDER-20260405-001\",\n  \"idempotencyKey\": \"{{$randomUUID}}\",\n  \"metadata\": {\n    \"merchantId\": \"MERCHANT-001\",\n    \"orderId\": \"ORDER-20260405-001\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Payment response valid', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.have.property('ledgerTransactionId');",
+                  "  pm.expect(body.data.status).to.eql('success');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "WL_A105 — Refund",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/transactions/refund",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", "refund"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletAccountId\": \"{{walletId}}\",\n  \"amount\": 75000,\n  \"currency\": \"VND\",\n  \"source\": \"REFUND\",\n  \"referenceId\": \"ORDER-20260405-001\",\n  \"idempotencyKey\": \"{{$randomUUID}}\",\n  \"metadata\": {\n    \"reason\": \"Customer requested refund\",\n    \"operatorId\": \"OPS-001\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Refund response valid', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.have.property('ledgerTransactionId');",
+                  "  pm.expect(body.data.status).to.eql('success');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "WL_A106 — Get Transaction",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transactions/{{transactionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", "{{transactionId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Transaction fields present', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.have.property('ledgerTransactionId');",
+                  "  pm.expect(body.data).to.have.property('amount');",
+                  "  pm.expect(body.data).to.have.property('status');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "WL_A106 — Get Transaction (Not Found)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transactions/00000000-0000-0000-0000-000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", "00000000-0000-0000-0000-000000000000"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('TRANSACTION_NOT_FOUND message', () => {",
+                  "  pm.expect(pm.response.json().message).to.eql('TRANSACTION_NOT_FOUND');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Journal / Audit",
+      "item": [
+        {
+          "name": "WL_A301 — Get Journal",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transactions/{{transactionId}}/journal",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", "{{transactionId}}", "journal"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Journal is array', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.be.an('array');",
+                  "});",
+                  "pm.test('Journal entries have required fields', () => {",
+                  "  const body = pm.response.json();",
+                  "  if (body.data.length > 0) {",
+                  "    pm.expect(body.data[0]).to.have.property('action');",
+                  "    pm.expect(body.data[0]).to.have.property('performedBy');",
+                  "    pm.expect(body.data[0]).to.have.property('timestamp');",
+                  "  }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

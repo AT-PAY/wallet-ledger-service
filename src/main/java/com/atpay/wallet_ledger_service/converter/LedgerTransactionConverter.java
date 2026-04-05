@@ -1,18 +1,19 @@
 package com.atpay.wallet_ledger_service.converter;
 
 import com.atpay.wallet_ledger_service.DTO.transaction.TransactionResponse;
-import com.atpay.wallet_ledger_service.DTO.wallet.WalletAccountRequest;
-import com.atpay.wallet_ledger_service.DTO.wallet.WalletAccountResponse;
 import com.atpay.wallet_ledger_service.entity.LedgerTransaction;
-import com.atpay.wallet_ledger_service.entity.WalletAccount;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import org.mapstruct.factory.Mappers;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface LedgerTransactionConverter {
 
-    LedgerTransactionConverter INSTANCE = Mappers.getMapper(LedgerTransactionConverter.class);
-
+    @Mapping(source = "walletAccount.walletAccountId", target = "walletAccountId")
     TransactionResponse toResponse(LedgerTransaction transaction);
+
+    @Mapping(source = "walletAccount.walletAccountId", target = "walletAccountId")
+    List<TransactionResponse> toResponseList(List<LedgerTransaction> transactions);
 }

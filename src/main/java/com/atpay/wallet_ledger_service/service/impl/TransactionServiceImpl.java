@@ -3,6 +3,7 @@ package com.atpay.wallet_ledger_service.service.impl;
 import com.atpay.wallet_ledger_service.DTO.transaction.BalanceChangeRequest;
 import com.atpay.wallet_ledger_service.DTO.transaction.DepositRequest;
 import com.atpay.wallet_ledger_service.DTO.transaction.HistoryTransactionWalletResponse;
+import com.atpay.wallet_ledger_service.DTO.transaction.JournalResponse;
 import com.atpay.wallet_ledger_service.DTO.transaction.PaymentRequest;
 import com.atpay.wallet_ledger_service.DTO.transaction.RefundRequest;
 import com.atpay.wallet_ledger_service.DTO.transaction.TransactionResponse;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiFunction;
@@ -46,6 +48,8 @@ public class TransactionServiceImpl implements TransactionService {
     private final ApplicationEventPublisher eventPublisher;
 
     private final ObjectMapper objectMapper;
+
+    private final LedgerTransactionConverter ledgerTransactionConverter;
 
     @Override
     @Transactional
@@ -77,6 +81,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Transactional
     public TransactionTransferResponse transfer(TransferRequest request) {
         String idemKey = "idempotency:" + request.getIdempotencyKey();
 
@@ -284,12 +289,31 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionResponse getTransaction(UUID transactionId) {
         LedgerTransaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new RuntimeException("TRANSACTION_NOT_FOUND"));
-        return LedgerTransactionConverter.INSTANCE.toResponse(transaction);
+        return ledgerTransactionConverter.toResponse(transaction);
     }
 
     @Override
     public HistoryTransactionWalletResponse getHistoryTransactionWallet(UUID walletId) {
-        return null;
+        List<LedgerTransaction> transactions = transactionRepository.findByWalletAccount_WalletAccountId(walletId);
+        List<TransactionResponse> responses = ledgerTransactionConverter.toResponseList(transactions);
+        return HistoryTransactionWalletResponse.builder()
+                .transactions(responses)
+                .total(responses.size())
+                .build();
+    }
+
+    @Override
+    public List<JournalResponse> getJournal(UUID transactionId) {
+        return transactionJournalRepository.findByLedgerTransaction_LedgerTransactionId(transactionId)
+                .stream()
+                .map(j -> JournalResponse.builder()
+                        .transactionJournalId(j.getTransactionJournalId())
+                        .ledgerTransactionId(transactionId)
+                        .action(j.getAction())
+                        .performedBy(j.getPerformedBy())
+                        .timestamp(j.getTimestamp())
+                        .build())
+                .toList();
     }
 
     private TransactionResponse processTransaction(

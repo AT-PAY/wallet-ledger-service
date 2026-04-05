@@ -13,7 +13,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
@@ -57,9 +59,11 @@ public class LedgerTransaction {
     private Map<String, Object> metadata;
 
     @Column(name = "created_at", nullable = false)
+    @CreationTimestamp
     private OffsetDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
+    @UpdateTimestamp
     private OffsetDateTime updatedAt;
 
     @Column(name = "deleted_at")

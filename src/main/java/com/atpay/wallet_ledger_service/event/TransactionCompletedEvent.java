@@ -1,6 +1,5 @@
 package com.atpay.wallet_ledger_service.event;
 
-import com.atpay.wallet_ledger_service.DTO.transaction.TransactionResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

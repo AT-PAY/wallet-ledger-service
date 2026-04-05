@@ -6,9 +6,14 @@ import java.util.UUID;
 
 public interface BalanceChangeRequest {
     UUID getIdempotencyKey();
+
     UUID getWalletAccountId();
+
     BigDecimal getAmount();
+
     String getCurrency();
+
     String getReferenceId();
+
     Map<String, Object> getMetadata();
 }

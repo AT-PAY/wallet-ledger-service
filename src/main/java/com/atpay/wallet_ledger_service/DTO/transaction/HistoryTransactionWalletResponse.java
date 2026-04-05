@@ -5,12 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
+import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class HistoryTransactionWalletResponse {
-    private UUID ledgerTransactionId;
+    private List<TransactionResponse> transactions;
+    private int total;
 }
