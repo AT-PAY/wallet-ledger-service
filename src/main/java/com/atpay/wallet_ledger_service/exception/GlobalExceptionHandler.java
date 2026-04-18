@@ -1,6 +1,7 @@
 package com.atpay.wallet_ledger_service.exception;
 
 import com.atpay.wallet_ledger_service.DTO.ApiResponse;
+import dev.buianhai1205.ATLogger.ATLogger;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +15,9 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResponse<Void> handleIllegalArgument(IllegalArgumentException ex) {
+        ATLogger.warn("Bad request")
+                .param("error", ex.getMessage())
+                .log();
         return new ApiResponse<>(400, ex.getMessage(), null);
     }
 
@@ -27,7 +31,17 @@ public class GlobalExceptionHandler {
             case "INSUFFICIENT_BALANCE" -> 422;
             default -> 400;
         };
-        HttpStatus httpStatus = HttpStatus.resolve(status);
+        if (status >= 500) {
+            ATLogger.error("Unexpected server error", ex)
+                    .param("error", message)
+                    .param("status", status)
+                    .log();
+        } else {
+            ATLogger.warn("Business error")
+                    .param("status", status)
+                    .param("error", message)
+                    .log();
+        }
         return new ApiResponse<>(status, message, null);
     }
 }
